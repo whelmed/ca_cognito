@@ -1,43 +1,187 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AWS SDK for JavaScript - Authenticate User with Cognito User Pool</title>
     <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Cognito Login Test</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- Custom styles for this template -->
+    <link href="signin.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script type="text/javascript" src="https://whelmed.github.io/ca_cognito/aws-sdk-2.77.0.js"></script>
+    <script type="text/javascript" src="https://whelmed.github.io/ca_cognito/aws-cognito-sdk.js"></script>
+    <script type="text/javascript" src="https://whelmed.github.io/ca_cognito/amazon-cognito-identity.js"></script>
+    <script type="text/javascript" src="https://whelmed.github.io/ca_cognito/vue.js"></script>
 </head>
 <body>
 
-<script type="text/javascript" src="https://whelmed.github.io/ca_cognito/aws-sdk-2.77.0.js"></script>
-<script type="text/javascript" src="https://whelmed.github.io/ca_cognito/aws-cognito-sdk.js"></script>
-<script type="text/javascript" src="https://whelmed.github.io/ca_cognito/amazon-cognito-identity.js"></script>
 
 <script>   
-var authenticationData = {
-        Username : 'GregDoe',
-        Password : 'GregDoe',
-    };
-    var authenticationDetails = new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails(authenticationData);
-    var poolData = { 
-        UserPoolId : 'POOL_ID',
-        ClientId : 'CLIENT_ID'
-    };
-    var userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(poolData);
-    var userData = {
-        Username : 'username',
-        Pool : userPool
-    };
-    var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser(userData);
-    cognitoUser.authenticateUser(authenticationDetails, {
-        onSuccess: function (result) {
-            console.log('access token + ' + result.getAccessToken().getJwtToken());
-            /*Use the idToken for Logins Map when Federating User Pools with Cognito Identity or when passing through an Authorization Header to an API Gateway Authorizer*/
-            console.log('idToken + ' + result.idToken.jwtToken);
-        },
 
-        onFailure: function(err) {
-            alert(err);
-        },
+</script>
 
+
+    <div class="container">
+        <div id="cognito-info" class="form-signin"> 
+            <label for="UserPoolID" class="sr-only">User Pool Id</label>
+            <input v-model="UserPoolID" type="text" id="UserPoolID" class="form-control" placeholder="us-east-2_dtMDOdMiU" required autofocus>
+            <label for="ClientId" class="sr-only">App Client Id</label>
+            <input v-model="ClientId" type="text" id="ClientId" class="form-control" placeholder="14e0a0cypfl2cna4hccaj07ohr" required>
+        </div>
+
+        <div id="messages" class="form-signin"> 
+            <span>Last Message: {{message}} </span>
+        </div>
+
+      <form id="sign-in-form" v-show="show" class="form-signin">
+        <h2 class="form-signin-heading">Please sign in</h2>
+        <label for="userName" class="sr-only">Username</label>
+        <input v-model="Username" type="text" id="userName" class="form-control" placeholder="Username" required autofocus>
+        <label for="inputPassword" class="sr-only">Password</label>
+        <input v-model="Password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+        
+        <button v-on:click="login" class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+      </form>
+
+
+      <form id="update-password-form" v-show="show" class="form-signin">
+        <h2 class="form-signin-heading">Change Password</h2>
+       
+        <label for="inputPassword" class="sr-only">New Password</label>
+        <input v-model="Password" type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+        
+        <button v-on:click="change" class="btn btn-lg btn-primary btn-block" type="submit">Update</button>
+      </form>
+    </div> 
+
+<script type="text/javascript">
+
+    var states = {
+        login: 'LOGIN',
+        changePassword: 'CHANGE_PASSWORD',
+        authenticated: 'AUTHENTICATED'
+    }
+    var currentState = states.login;
+
+    var messages = new Vue({
+        el: "#messages",
+        data: {
+            message: ''
+        }
+    })
+     var cognitoInfo = new Vue({
+        el: "#cognito-info",
+        data: {
+            UserPoolID: '',
+            ClientId: ''
+        }
     });
+    var changeWrapper;
+    var updatePassword = new Vue({
+        el: "#update-password-form",
+        data: {
+            Password: '',
+            show: false
+        },
+        methods: {
+            change: function(event) {
+                event.preventDefault();            
+                changeWrapper(this.Password);
+            }
+        }
+    });
+
+    var authenticationDetails,
+        userPool,
+        cognitoUser;
+    
+
+    var app = new Vue({
+        el: '#sign-in-form',
+        data: {
+            Username: '',
+            Password: '',
+            show: true
+        },
+        methods: {
+            login: function (event) {
+                event.preventDefault();
+               
+                authenticationDetails = new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails({
+                    "Username": this.Username,
+                    "Password": this.Password
+                });    
+                
+                userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool({
+                    "UserPoolId": cognitoInfo.UserPoolID,
+                    "ClientId": cognitoInfo.ClientId
+                });
+                
+                var userData = {
+                    Username : this.Username,
+                    Pool : userPool
+                };
+
+               cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser(userData);
+    
+                cognitoUser.authenticateUser(authenticationDetails, {
+                    onSuccess: function (result) {
+                        console.log('access token + ' + result.getAccessToken().getJwtToken());
+                        /*Use the idToken for Logins Map when Federating User Pools with Cognito Identity or when passing through an Authorization Header to an API Gateway Authorizer*/
+                        console.log('idToken + ' + result.idToken.jwtToken);
+                        messages.message = "Welcome! You've successfully authenticated! :)";
+                        app.show = false;
+                    },
+
+                    onFailure: function(err) {
+                        messages.message = err.message;
+                    },
+                    
+                    newPasswordRequired: function(userAttributes, requiredAttributes) {
+                        // User was signed up by an admin and must provide new
+                        // password and required attributes, if any, to complete
+                        // authentication.
+                        // the api doesn't accept this field back
+                        updatePassword.show = true;
+                        app.show = false;
+
+                        delete userAttributes.email_verified;
+                        delete userAttributes.phone_number_verified;
+
+                        console.log(userAttributes, requiredAttributes);
+                        // Get these details and call
+                        var that = this;
+                        changeWrapper = function(newPassword) {
+                            cognitoUser.completeNewPasswordChallenge(newPassword, userAttributes, that);
+                        }
+                    }
+
+                });
+            }
+        }
+    });
+
+   
+
+    
+
+        
 </script>
 </body>
 </html>
