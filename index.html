@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AWS SDK for JavaScript - Authenticate User with Cognito User Pool</title>
+    <meta charset="utf-8">
+</head>
+<body>
+<script type="text/javascript" src="aws-sdk-2.77.0.js"></script>
+<script type="text/javascript" src="aws-cognito-sdk.js"></script>
+<script type="text/javascript" src="amazon-cognito-identity.js"></script>
+
+<script>   
+var authenticationData = {
+        Username : 'GregDoe',
+        Password : 'GregDoe',
+    };
+    var authenticationDetails = new AWSCognito.CognitoIdentityServiceProvider.AuthenticationDetails(authenticationData);
+    var poolData = { UserPoolId : 'us-west-2_z2uo8qYo0',
+        ClientId : '3rau8jniupnuu2onrp4edj96ao'
+    };
+    var userPool = new AWSCognito.CognitoIdentityServiceProvider.CognitoUserPool(poolData);
+    var userData = {
+        Username : 'username',
+        Pool : userPool
+    };
+    var cognitoUser = new AWSCognito.CognitoIdentityServiceProvider.CognitoUser(userData);
+    cognitoUser.authenticateUser(authenticationDetails, {
+        onSuccess: function (result) {
+            console.log('access token + ' + result.getAccessToken().getJwtToken());
+            /*Use the idToken for Logins Map when Federating User Pools with Cognito Identity or when passing through an Authorization Header to an API Gateway Authorizer*/
+            console.log('idToken + ' + result.idToken.jwtToken);
+        },
+
+        onFailure: function(err) {
+            alert(err);
+        },
+
+    });
+</script>
+</body>
+</html>
