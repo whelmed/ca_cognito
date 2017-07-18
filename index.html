@@ -11,23 +11,23 @@
     <title>Cognito Login Test</title>
 
     <!-- Bootstrap core CSS -->
-    <link href="https://whelmed.github.io/ca_cognito/bootstrap.min.css" rel="stylesheet">
+    <link href="bootstrap.min.css" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="https://whelmed.github.io/ca_cognito/ie10-viewport-bug-workaround.css" rel="stylesheet">
+    <link href="ie10-viewport-bug-workaround.css" rel="stylesheet">
 
     <!-- Custom styles for this template -->
-    <link href="https://whelmed.github.io/ca_cognito/signin.css" rel="stylesheet">
+    <link href="signin.css" rel="stylesheet">
 
     <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
     <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <script type="text/javascript" src="https://whelmed.github.io/ca_cognito/aws-sdk-2.77.0.js"></script>
-    <script type="text/javascript" src="https://whelmed.github.io/ca_cognito/aws-cognito-sdk.js"></script>
-    <script type="text/javascript" src="https://whelmed.github.io/ca_cognito/amazon-cognito-identity.js"></script>
-    <script type="text/javascript" src="https://whelmed.github.io/ca_cognito/vue.js"></script>
+    <script type="text/javascript" src="aws-sdk-2.77.0.js"></script>
+    <script type="text/javascript" src="aws-cognito-sdk.js"></script>
+    <script type="text/javascript" src="amazon-cognito-identity.js"></script>
+    <script type="text/javascript" src="vue.js"></script>
 </head>
 <body>
 
@@ -71,13 +71,6 @@
     </div> 
 
 <script type="text/javascript">
-
-    var states = {
-        login: 'LOGIN',
-        changePassword: 'CHANGE_PASSWORD',
-        authenticated: 'AUTHENTICATED'
-    }
-    var currentState = states.login;
 
     var messages = new Vue({
         el: "#messages",
