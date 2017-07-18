@@ -6,32 +6,9 @@
 </head>
 <body>
 
-<script type="text/javascript" src="aws-sdk-2.77.0.js"></script>
-<script type="text/javascript" src="aws-cognito-sdk.js"></script>
-<script type="text/javascript" src="amazon-cognito-identity.js"></script>
-
-<script type="text/javascript">
-
-    function importScript(url) {
-        var head = document.getElementsByTagName('head')[0];
-        var s = document.createElement('script');
-        s.type = 'text/javascript';
-        s.src = url;
-        head.appendChild(s);
-    }
-    if ("undefined" === typeof AWSCognito) {       
-        var scripts = [ 
-            "https://whelmed.github.io/ca_cognito/aws-sdk-2.77.0.js", 
-            "https://whelmed.github.io/ca_cognito/aws-cognito-sdk.js",
-            "https://whelmed.github.io/ca_cognito/amazon-cognito-identity.js"
-        ];
-
-        for (var i=0; i<scripts.length; i++) {
-            importScript(scripts[i]);
-        }
-    }
-    
-</script>
+<script type="text/javascript" src="https://whelmed.github.io/ca_cognito/aws-sdk-2.77.0.js"></script>
+<script type="text/javascript" src="https://whelmed.github.io/ca_cognito/aws-cognito-sdk.js"></script>
+<script type="text/javascript" src="https://whelmed.github.io/ca_cognito/amazon-cognito-identity.js"></script>
 
 <script>   
 var authenticationData = {
